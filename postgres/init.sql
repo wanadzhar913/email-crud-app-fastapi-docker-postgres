@@ -1,0 +1,18 @@
+-- Create a database
+CREATE DATABASE $POSTGRES_DB
+
+-- Create a user
+CREATE USER $POSTGRES_USER WITH ENCRYPTED PASSWORD $POSTGRES_PASSWORD;
+
+-- Grant privileges to the user 
+GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;
+
+-- Optional: Grant privileges on tables and sequences in the public schema
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $POSTGRES_USER;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $POSTGRES_USER;
+
+-- Change database ownership
+ALTER DATABASE $POSTGRES_DB OWNER TO $POSTGRES_USER;
+
+-- Connect to the database
+\c $POSTGRES_DB
