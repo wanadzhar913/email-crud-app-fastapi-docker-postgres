@@ -15,5 +15,6 @@ RUN chmod +x /wait-for-postgres.sh
 
 EXPOSE 80
 
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
-CMD ["/wait-for-postgres.sh", "postgres", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+ENV POSTGRES_HOST=postgres
+
+CMD ["sh", "-c", "/wait-for-postgres.sh \"${POSTGRES_HOST}\" uvicorn main:app --host 0.0.0.0 --port 80"]

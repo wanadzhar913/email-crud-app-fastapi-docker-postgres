@@ -5,7 +5,10 @@ const API_BASE = (() => {
   if (window.location.port === "8000") {
     return window.location.origin;
   }
-  return `${window.location.protocol}//${window.location.hostname}:8000`;
+  if (window.location.port === "8080") {
+    return `${window.location.protocol}//${window.location.hostname}:8000`;
+  }
+  return window.location.origin;
 })();
 
 const API = `${API_BASE}/api/contacts`;

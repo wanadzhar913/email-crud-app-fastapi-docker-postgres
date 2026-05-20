@@ -2,3 +2,11 @@
 *venv/
 *__pycache__/
 *.env
+
+# Terraform
+terraform/**/.terraform/
+terraform/**/*.tfstate
+terraform/**/*.tfstate.*
+terraform/deploy/terraform.tfvars
+terraform/deploy/backend.hcl
+terraform/bootstrap/terraform.tfvars
