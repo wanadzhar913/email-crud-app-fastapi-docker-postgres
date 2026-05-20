@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacts</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <p id="project-version" class="version"></p>
+    <h1 id="project-title">Contacts</h1>
+    <p id="project-description" class="subtitle"></p>
+  </header>
+
+  <main class="container">
+    <section class="panel form-panel">
+      <h2 id="form-title">Add contact</h2>
+      <form id="contact-form" novalidate>
+        <input type="hidden" id="contact-id" value="">
+        <div class="field">
+          <label for="first-name">First name</label>
+          <input type="text" id="first-name" name="first_name" required autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="last-name">Last name</label>
+          <input type="text" id="last-name" name="last_name" required autocomplete="family-name">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="phone-number">Phone number</label>
+          <input type="tel" id="phone-number" name="phone_number" required autocomplete="tel">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">Save contact</button>
+          <button type="button" class="btn btn-secondary" id="cancel-btn" hidden>Cancel</button>
+        </div>
+      </form>
+      <p id="form-message" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel list-panel">
+      <div class="list-header">
+        <h2>All contacts</h2>
+        <button type="button" class="btn btn-secondary" id="refresh-btn">Refresh</button>
+      </div>
+      <p id="list-message" class="message" role="status" aria-live="polite"></p>
+      <div class="table-wrap">
+        <table id="contacts-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-body">
+            <tr class="empty-row">
+              <td colspan="5">Loading contacts…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

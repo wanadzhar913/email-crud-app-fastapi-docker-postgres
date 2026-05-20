@@ -16,3 +16,8 @@ class Contact(_BaseContact):
 
 class CreateContact(_BaseContact):
     pass
+
+class ProjectInfo(BaseModel):
+    title: str
+    version: str
+    description: str

@@ -1,6 +1,9 @@
+import os
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, List
 
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import orm
 
 import schemas
@@ -10,12 +13,38 @@ from services import _add_tables
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
-app = FastAPI()
 
-@app.on_event("startup")
-async def startup_event():
-    """To ensure tables are created at startup"""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     _add_tables()
+    yield
+
+
+app = FastAPI(
+    lifespan=lifespan,
+    title=os.getenv("PROJECT_TITLE", "FastAPI Project"),
+    description=os.getenv("PROJECT_DESCRIPTION", "A simple CRUD app for emails. We'll deploy this to AWS."),
+    version=os.getenv("PROJECT_VERSION", "0.1.0"),
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/api/project/", response_model=schemas.ProjectInfo)
+async def get_project_info():
+    return schemas.ProjectInfo(
+        title=os.getenv("PROJECT_TITLE", "Email CRUD App"),
+        version=os.getenv("PROJECT_VERSION", "0.1.0"),
+        description=os.getenv(
+            "PROJECT_DESCRIPTION",
+            "Create, view, update, and delete contacts.",
+        ),
+    )
 
 @app.post("/api/contacts/", response_model=schemas.Contact)
 async def create_contact(
