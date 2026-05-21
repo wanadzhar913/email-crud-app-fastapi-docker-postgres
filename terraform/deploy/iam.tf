@@ -161,3 +161,154 @@ resource "aws_iam_role_policy" "github_actions" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "github_actions_terraform" {
+  name = "${local.name_prefix}-github-actions-terraform"
+  role = aws_iam_role.github_actions.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "TerraformStateS3"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.terraform_state_bucket}",
+          "arn:aws:s3:::${var.terraform_state_bucket}/*"
+        ]
+      },
+      {
+        Sid    = "TerraformVPCAndNetworking"
+        Effect = "Allow"
+        Action = [
+          "ec2:*Vpc*",
+          "ec2:*Subnet*",
+          "ec2:*Gateway*",
+          "ec2:*RouteTable*",
+          "ec2:*SecurityGroup*",
+          "ec2:*Address*",
+          "ec2:Describe*",
+          "ec2:CreateTags",
+          "ec2:DeleteTags",
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformLoadBalancing"
+        Effect = "Allow"
+        Action = [
+          "elasticloadbalancing:*"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformECS"
+        Effect = "Allow"
+        Action = [
+          "ecs:*"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformECR"
+        Effect = "Allow"
+        Action = [
+          "ecr:*"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformRDS"
+        Effect = "Allow"
+        Action = [
+          "rds:*"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformLogs"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:DeleteLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:PutRetentionPolicy",
+          "logs:TagResource",
+          "logs:ListTagsForResource",
+          "logs:DeleteRetentionPolicy"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformSecretsManager"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:CreateSecret",
+          "secretsmanager:DeleteSecret",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:PutSecretValue",
+          "secretsmanager:TagResource",
+          "secretsmanager:UntagResource",
+          "secretsmanager:UpdateSecret",
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:ListSecrets"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformIAMForECSAndGitHubOIDC"
+        Effect = "Allow"
+        Action = [
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:GetRole",
+          "iam:PassRole",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:GetRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:CreatePolicy",
+          "iam:DeletePolicy",
+          "iam:GetPolicy",
+          "iam:GetPolicyVersion",
+          "iam:CreatePolicyVersion",
+          "iam:DeletePolicyVersion",
+          "iam:TagRole",
+          "iam:UntagRole",
+          "iam:CreateOpenIDConnectProvider",
+          "iam:DeleteOpenIDConnectProvider",
+          "iam:GetOpenIDConnectProvider",
+          "iam:TagOpenIDConnectProvider",
+          "iam:UpdateOpenIDConnectProviderThumbprint",
+          "iam:ListOpenIDConnectProviders"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "TerraformReadOnlyDiscovery"
+        Effect = "Allow"
+        Action = [
+          "sts:GetCallerIdentity",
+          "ec2:DescribeAvailabilityZones",
+          "iam:GetUser",
+          "iam:GetAccountSummary"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
