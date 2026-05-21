@@ -245,7 +245,7 @@ Ensure [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) `PROJECT_N
 
 ### Step 4 — Build and deploy container images
 
-Push to `main` or run workflow **Deploy to AWS ECS** manually.
+Push to `master` or run workflow **Deploy to AWS ECS** manually.
 
 The workflow:
 
@@ -505,7 +505,7 @@ backend task (public subnet, private IP)
 
 | Workflow | File | When | What it does |
 |----------|------|------|----------------|
-| Deploy to AWS ECS | [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) | Push to `main`, manual | Build/push images, force ECS rollout |
+| Deploy to AWS ECS | [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) | Push to `master`, manual | Build/push images, force ECS rollout |
 | Terraform | [`.github/workflows/terraform.yml`](.github/workflows/terraform.yml) | PR touching `terraform/` | `fmt`, `validate`, optional `plan` with S3 backend |
 
 OIDC trust is scoped to `repo:<github_repository>:*` (see [`terraform/deploy/iam.tf`](terraform/deploy/iam.tf)).

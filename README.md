@@ -66,7 +66,7 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the complete guide. Short version:
 1. Bootstrap S3 state → `terraform/bootstrap`
 2. `cd terraform/deploy` → `terraform init -backend-config=backend.hcl` → `terraform apply`
 3. Set GitHub secrets (`AWS_ROLE_ARN`, `AWS_REGION`, `TF_STATE_BUCKET`)
-4. Push to `main` or run **Deploy to AWS ECS**
+4. Push to `master` or run **Deploy to AWS ECS**
 5. Open `terraform output app_url` (from `terraform/deploy`)
 
 ## Prerequisites
