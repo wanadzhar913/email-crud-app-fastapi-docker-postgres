@@ -2,7 +2,7 @@ name: Deploy to AWS ECS
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "backend/**"
       - "frontend/**"

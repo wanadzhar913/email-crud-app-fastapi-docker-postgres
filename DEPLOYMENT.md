@@ -11,15 +11,16 @@ For local development, see [README.md](README.md).
 1. [Architecture overview](#architecture-overview)
 2. [What Terraform creates](#what-terraform-creates)
 3. [Prerequisites](#prerequisites)
-4. [Step-by-step deployment](#step-by-step-deployment)
-5. [How the ALB is configured](#how-the-alb-is-configured)
-6. [How ECS is configured](#how-ecs-is-configured)
-7. [Route 53 and custom domains (optional)](#route-53-and-custom-domains-optional)
-8. [Request flow (browser → app)](#request-flow-browser--app)
-9. [GitHub Actions deploy pipeline](#github-actions-deploy-pipeline)
-10. [Verify the deployment](#verify-the-deployment)
-11. [Troubleshooting](#troubleshooting)
-12. [Tear down](#tear-down)
+4. [IAM permissions for terraform apply](#iam-permissions-for-terraform-apply)
+5. [Step-by-step deployment](#step-by-step-deployment)
+6. [How the ALB is configured](#how-the-alb-is-configured)
+7. [How ECS is configured](#how-ecs-is-configured)
+8. [Route 53 and custom domains (optional)](#route-53-and-custom-domains-optional)
+9. [Request flow (browser → app)](#request-flow-browser--app)
+10. [GitHub Actions deploy pipeline](#github-actions-deploy-pipeline)
+11. [Verify the deployment](#verify-the-deployment)
+12. [Troubleshooting](#troubleshooting)
+13. [Tear down](#tear-down)
 
 ---
 
@@ -91,6 +92,42 @@ Default resource naming: `{project_name}-{environment}-*` → e.g. `email-crud-p
 - [AWS CLI](https://aws.amazon.com/cli/) configured (`aws configure` or SSO)
 - A GitHub repository for this project
 - Docker (for local builds; CI builds in GitHub Actions)
+- An **IAM user or role** with enough permissions to run `terraform apply` (see below)
+
+---
+
+## IAM permissions for `terraform apply`
+
+If you use an IAM user such as `terraform-user` (as in `aws configure`), that identity needs permission to **create** VPC, ALB, ECS, ECR, RDS, Secrets Manager, CloudWatch Logs, and IAM roles (for ECS + GitHub OIDC). Errors like these mean the user is missing rights:
+
+```text
+AccessDeniedException: ... is not authorized to perform: ecr:CreateRepository
+AccessDeniedException: ... is not authorized to perform: ecs:CreateCluster
+AccessDeniedException: ... is not authorized to perform: logs:CreateLogGroup
+AccessDeniedException: ... is not authorized to perform: secretsmanager:CreateSecret
+```
+
+### Option A — Learning / solo account (simplest)
+
+In **IAM → Users → terraform-user → Add permissions**:
+
+1. Attach managed policy **`AdministratorAccess`**  
+   Covers this stack and avoids chasing individual `AccessDenied` errors. Use only on a personal or sandbox account.
+
+### Option B — Custom policy (narrower than admin)
+
+1. Open [`terraform/deploy/terraform-user-iam-policy.json`](terraform/deploy/terraform-user-iam-policy.json).
+2. Replace `YOUR_STATE_BUCKET_NAME` with your real state bucket (same as `backend.hcl`).
+3. **IAM → Policies → Create policy → JSON** → paste the file → name e.g. `EmailCrudTerraformDeploy`.
+4. **IAM → Users → terraform-user → Add permissions → Attach policies** → select `EmailCrudTerraformDeploy`.
+
+You can also attach the same policy to a **group** (e.g. `terraform-operators`) and add `terraform-user` to that group.
+
+### Verify who Terraform is using
+
+```bash
+aws sts get-caller-identity
+```
 
 ---
 
