@@ -1,0 +1,9 @@
+aws_region               = "ap-southeast-5"
+project_name             = "email-crud"
+environment              = "prod"
+github_repository        = "YOUR_GITHUB_USERNAME/email-crud-app-fastapi-docker-postgres"
+terraform_state_bucket   = "YOUR_ACCOUNT_ID-email-crud-terraform-state"
+
+project_title       = "Email CRUD App"
+project_version     = "0.1.0"
+project_description = "A simple CRUD app for emails. Deployed on AWS ECS."

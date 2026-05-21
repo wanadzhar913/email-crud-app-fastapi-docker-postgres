@@ -1,0 +1,8 @@
+# Copy to backend.hcl and set your bucket name (from bootstrap output).
+# From this directory: terraform init -backend-config=backend.hcl
+
+bucket       = "YOUR_ACCOUNT_ID-email-crud-terraform-state"
+key          = "prod/terraform.tfstate"
+region       = "ap-southeast-5"
+use_lockfile = true
+encrypt      = true
