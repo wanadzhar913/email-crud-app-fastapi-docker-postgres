@@ -35,6 +35,7 @@ jobs:
         working-directory: terraform/deploy
         run: terraform validate
 
+
   plan:
     runs-on: ubuntu-latest
     needs: validate
