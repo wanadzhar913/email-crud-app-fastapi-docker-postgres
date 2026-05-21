@@ -72,4 +72,5 @@ jobs:
         working-directory: terraform/deploy
         env:
           TF_VAR_github_repository: ${{ github.repository }}
+          TF_VAR_terraform_state_bucket: ${{ env.TF_STATE_BUCKET }}
         run: terraform plan -input=false -no-color
