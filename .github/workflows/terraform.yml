@@ -44,7 +44,6 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
 
-    if: ${{ env.AWS_ROLE_ARN != '' && env.AWS_REGION != '' && env.TF_STATE_BUCKET != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

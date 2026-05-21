@@ -61,8 +61,6 @@ flowchart TB
 
 ## Quick deploy summary
 
-See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the complete guide. Short version:
-
 1. Bootstrap S3 state → `terraform/bootstrap`
 2. `cd terraform/deploy` → `terraform init -backend-config=backend.hcl` → `terraform apply`
 3. Set GitHub secrets (`AWS_ROLE_ARN`, `AWS_REGION`, `TF_STATE_BUCKET`)
@@ -88,17 +86,6 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the complete guide. Short version:
 On pull requests that touch `terraform/`, the **Terraform** workflow runs `fmt`, `validate`, and optionally `plan` when `AWS_ROLE_ARN`, `AWS_REGION`, and `TF_STATE_BUCKET` secrets are set.
 
 Infrastructure apply is **manual** (`terraform apply` locally) to avoid accidental destroys from CI.
-
-## Tear down
-
-```bash
-cd terraform/deploy
-terraform destroy
-```
-
-Empty ECR repositories first if destroy fails on images still in use.
-
-The state bucket in `terraform/bootstrap/` is separate; destroy it only when you no longer need remote state (`cd terraform/bootstrap && terraform destroy`).
 
 # 3.0 Resources
 - [Complete Guide to Creating and Pushing Docker Images to Amazon ECR](https://medium.com/@sayalishewale12/complete-guide-to-creating-and-pushing-docker-images-to-amazon-ecr-70b67ac1ab4c#:~:text=Go%20back%20to%20the%20AWS,south%2D1.amazonaws.com)
