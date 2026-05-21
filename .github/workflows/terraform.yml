@@ -67,7 +67,6 @@ jobs:
             -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
             -backend-config="key=prod/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}" \
-            -backend-config="use_lockfile=true" \
             -backend-config="encrypt=true"
 
       - name: Terraform Plan
