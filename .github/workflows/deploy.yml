@@ -1,0 +1,80 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  PROJECT_NAME: email-crud
+  ENVIRONMENT: prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image names
+        id: images
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          PREFIX="${{ env.PROJECT_NAME }}-${{ env.ENVIRONMENT }}"
+          echo "backend=${ACCOUNT_ID}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${PREFIX}-backend" >> "$GITHUB_OUTPUT"
+          echo "frontend=${ACCOUNT_ID}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${PREFIX}-frontend" >> "$GITHUB_OUTPUT"
+          echo "cluster=${PREFIX}-cluster" >> "$GITHUB_OUTPUT"
+          echo "backend_service=${PREFIX}-backend" >> "$GITHUB_OUTPUT"
+          echo "frontend_service=${PREFIX}-frontend" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push backend
+        env:
+          IMAGE: ${{ steps.images.outputs.backend }}
+        run: |
+          docker build -t "$IMAGE:${{ github.sha }}" -t "$IMAGE:latest" ./backend
+          docker push "$IMAGE:${{ github.sha }}"
+          docker push "$IMAGE:latest"
+
+      - name: Build and push frontend
+        env:
+          IMAGE: ${{ steps.images.outputs.frontend }}
+        run: |
+          docker build -t "$IMAGE:${{ github.sha }}" -t "$IMAGE:latest" ./frontend
+          docker push "$IMAGE:${{ github.sha }}"
+          docker push "$IMAGE:latest"
+
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster "${{ steps.images.outputs.cluster }}" \
+            --service "${{ steps.images.outputs.backend_service }}" \
+            --force-new-deployment
+          aws ecs update-service \
+            --cluster "${{ steps.images.outputs.cluster }}" \
+            --service "${{ steps.images.outputs.frontend_service }}" \
+            --force-new-deployment
+
+      - name: Wait for services to stabilize
+        run: |
+          aws ecs wait services-stable \
+            --cluster "${{ steps.images.outputs.cluster }}" \
+            --services "${{ steps.images.outputs.backend_service }}" "${{ steps.images.outputs.frontend_service }}"

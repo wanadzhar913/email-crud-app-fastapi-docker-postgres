@@ -1,0 +1,4 @@
+aws_region = "ap-southeast-5"
+
+# Must be globally unique. Common pattern: AWS account ID + project name.
+state_bucket_name = "YOUR_ACCOUNT_ID-email-crud-terraform-state"
